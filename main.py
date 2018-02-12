@@ -34,6 +34,7 @@ class LabelTool():
         self.egDir = ''
         self.egList = []
         self.outDir = ''
+        self.outYoloDir = ''
         self.cur = 0
         self.total = 0
         self.category = ''
@@ -145,6 +146,12 @@ class LabelTool():
         if not os.path.exists(self.outDir):
             os.mkdir(self.outDir)
 
+         self.outYoloDir = os.path.join(r'./YoloLabels', '%s' %(self.category))
+         if not os.path.exists('./YoloLabels'):
+             os.mkdir('./YoloLabels')
+         if not os.path.exists(self.outYoloDir):
+             os.mkdir(self.outYoloDir)
+
         # load example bboxes
         self.egDir = os.path.join(r'./Examples', '%03d' %(1))
         if not os.path.exists(self.egDir):
@@ -182,6 +189,7 @@ class LabelTool():
         self.imagename = os.path.split(imagepath)[-1].split('.')[0]
         labelname = self.imagename + '.txt'
         self.labelfilename = os.path.join(self.outDir, labelname)
+        self.labelfilenameyolo = os.path.join(self.outYoloDir, labelname)
         bbox_cnt = 0
         if os.path.exists(self.labelfilename):
             with open(self.labelfilename) as f:
@@ -199,12 +207,55 @@ class LabelTool():
                     self.bboxIdList.append(tmpId)
                     self.listbox.insert(END, '(%d, %d) -> (%d, %d)' %(tmp[0], tmp[1], tmp[2], tmp[3]))
                     self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
+     def convert(self, size, box):
+         dw = 1./size[0]
+         dh = 1./size[1]
+         x = (box[0] + box[1])/2.0
+         y = (box[2] + box[3])/2.0
+         w = box[1] - box[0]
+         h = box[3] - box[2]
+         x = x*dw
+         w = w*dw
+         y = y*dh
+         h = h*dh
+         return (x,y,w,h)
+        
+    def convert2yolo_file(self, labelfile, labelfileyolo):
+        index = os.path.splitext(os.path.basename(labelfile))[0]
+        print labelfile
+        print 'index', index
+        img_path = os.path.join(self.imageDir, index+'.jpg')
+
+        print 'img_path', img_path
+        im=Image.open(img_path)
+        w= int(im.size[0])
+        h= int(im.size[1])
+
+        with open(labelfile, 'r') as fin:
+            with open(labelfileyolo, 'w') as fout:
+                lines = fin.readlines()
+                for line in lines:
+                    line = line.strip()
+                    raws = line.split(" ")
+                    if len(raws) != 4:
+                        print "obj number:", line
+                        continue
+                    xmin, ymin, xmax, ymax = raws
+                    print 'raws', raws, xmin, xmax, ymin, ymax
+                    print(w, h)
+                    print (float(xmin), float(xmax), float(ymin), float(ymax))
+                    b = (float(xmin), float(xmax), float(ymin), float(ymax))
+                    bb = self.convert((w,h), b)
+                    print(bb)
+                    cls_id = 0
+                    fout.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
 
     def saveImage(self):
         with open(self.labelfilename, 'w') as f:
             f.write('%d\n' %len(self.bboxList))
             for bbox in self.bboxList:
                 f.write(' '.join(map(str, bbox)) + '\n')
+        self.convert2yolo_file(self.labelfilename, self.labelfilenameyolo)
         print 'Image No. %d saved' %(self.cur)
 
 
