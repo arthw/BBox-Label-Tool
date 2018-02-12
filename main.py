@@ -207,18 +207,18 @@ class LabelTool():
                     self.bboxIdList.append(tmpId)
                     self.listbox.insert(END, '(%d, %d) -> (%d, %d)' %(tmp[0], tmp[1], tmp[2], tmp[3]))
                     self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
-     def convert(self, size, box):
-         dw = 1./size[0]
-         dh = 1./size[1]
-         x = (box[0] + box[1])/2.0
-         y = (box[2] + box[3])/2.0
-         w = box[1] - box[0]
-         h = box[3] - box[2]
-         x = x*dw
-         w = w*dw
-         y = y*dh
-         h = h*dh
-         return (x,y,w,h)
+    def convert(self, size, box):
+        dw = 1./size[0]
+        dh = 1./size[1]
+        x = (box[0] + box[1])/2.0
+        y = (box[2] + box[3])/2.0
+        w = box[1] - box[0]
+        h = box[3] - box[2]
+        x = x*dw
+        w = w*dw
+        y = y*dh
+        h = h*dh
+        return (x,y,w,h)
         
     def convert2yolo_file(self, labelfile, labelfileyolo):
         index = os.path.splitext(os.path.basename(labelfile))[0]
