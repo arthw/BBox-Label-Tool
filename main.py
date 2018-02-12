@@ -146,11 +146,11 @@ class LabelTool():
         if not os.path.exists(self.outDir):
             os.mkdir(self.outDir)
 
-         self.outYoloDir = os.path.join(r'./YoloLabels', '%s' %(self.category))
-         if not os.path.exists('./YoloLabels'):
-             os.mkdir('./YoloLabels')
-         if not os.path.exists(self.outYoloDir):
-             os.mkdir(self.outYoloDir)
+        self.outYoloDir = os.path.join(r'./YoloLabels', '%s' %(self.category))
+        if not os.path.exists('./YoloLabels'):
+            os.mkdir('./YoloLabels')
+        if not os.path.exists(self.outYoloDir):
+            os.mkdir(self.outYoloDir)
 
         # load example bboxes
         self.egDir = os.path.join(r'./Examples', '%03d' %(1))
