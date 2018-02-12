@@ -132,7 +132,7 @@ class LabelTool():
 ##            return
         # get image list
         self.imageDir = os.path.join(r'./Images', '%s' %(self.category))
-        self.imageList = glob.glob(os.path.join(self.imageDir, '*.*'))
+        self.imageList = glob.glob(os.path.join(self.imageDir, '*.jpg'))
         if len(self.imageList) == 0:
             print 'No .* images found in the specified dir!'
             return
